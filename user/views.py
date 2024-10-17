@@ -1,4 +1,5 @@
 from django.contrib import messages
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 
@@ -9,10 +10,10 @@ from django.views.generic import CreateView
 from user.forms import UserLoginForm, UserRegisterForm, UserEditForm, ProfileForm
 
 
-class CustomLoginView(LoginView):
-    form_class = UserLoginForm
-    template_name = 'registration/login.html'
-    next_page = reverse_lazy('shop:index')
+# class CustomLoginView(LoginView):
+#     form_class = UserLoginForm
+#     template_name = 'registration/login.html'
+#     next_page = reverse_lazy('shop:index')
 
 
 class RegisterView(CreateView):
@@ -20,9 +21,9 @@ class RegisterView(CreateView):
     template_name = 'registration/register.html'
     success_url = reverse_lazy('user:login')
 
-
-class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('shop:index')
+#
+# class CustomLogoutView(LogoutView):
+#     next_page = reverse_lazy('shop:index')
 
 
 @login_required
@@ -37,12 +38,9 @@ def profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            # Можно добавить сообщение об успешном сохранении
-            messages.success(request, "Данные профиля успешно обновлены.")
+            messages.success(request, "Ваш профиль успешно обновлен!")
         else:
-            # Вывод ошибок валидации для отладки
-            print(user_form.errors)
-            print(profile_form.errors)
+            messages.error(request, 'Error updating your profile')
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
@@ -50,5 +48,4 @@ def profile(request):
     return render(request, 'profile/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
-        'messages': messages
     })

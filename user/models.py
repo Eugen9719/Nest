@@ -12,10 +12,11 @@ class User(AbstractUser):
                             default=RoleStatus.CUSTOMER)
 
     email = models.EmailField("Адрес электронной почты", unique=True)
+    username = models.CharField(max_length=50, blank=True, null=True)
     phone_number = PhoneNumberField(blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
 
 class Profile(models.Model):

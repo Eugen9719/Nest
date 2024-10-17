@@ -1,10 +1,38 @@
+from django.contrib.postgres.indexes import GinIndex, BTreeIndex
 from django.db import models
 from django.urls import reverse
+from mptt.fields import TreeForeignKey
+from mptt.models import MPTTModel
 
 from user.models import User
 
 
+class Category(MPTTModel):
+    name = models.CharField(max_length=250)
+    slug = models.SlugField(max_length=255, unique=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    parent = TreeForeignKey(
+        "self", null=True, blank=True, related_name="children", on_delete=models.CASCADE
+    )
+    image = models.ImageField(blank=True, null=True, upload_to="category/")
+
+    class Meta:
+        verbose_name_plural = 'Категории'
+        indexes = [
+            BTreeIndex(fields=["updated_at"], name="updated_at_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse("shop:products_list_by_category", kwargs={"slug": self.slug})
+
+
 class Product(models.Model):
+    # product_type = models.ForeignKey(
+    #     ProductType, related_name="products", on_delete=models.CASCADE
+    # )
     name = models.CharField("Название", max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField("Описание", blank=True, null=True)
@@ -13,6 +41,13 @@ class Product(models.Model):
     created_at = models.DateTimeField("Дата создания", auto_now_add=True, editable=False)
     updated_at = models.DateTimeField("Дата обновления", auto_now=True, editable=False)
     is_active = models.BooleanField("Наличие", default=True)
+    category = models.ForeignKey(
+        Category,
+        related_name="products",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
 
     stock_qty = models.IntegerField("Кол-во на складе", default=0)
     price = models.DecimalField("Цена", max_digits=6, decimal_places=2)
@@ -20,11 +55,38 @@ class Product(models.Model):
 
     vendor = models.ForeignKey(User, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name_plural = "Продукты"
+        ordering = ("slug",)
+
+        indexes = [
+            models.Index(
+                fields=["category_id", "slug"],
+            ),
+        ]
+
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = "Продукты"
-
     def get_absolute_url(self):
         return reverse('shop:product_detail', args=[self.slug])
+
+    def get_first_image(self):
+        all_media = self.media.all()
+        return all_media[0] if all_media else None
+
+
+class ProductMedia(models.Model):
+    product = models.ForeignKey(Product, related_name="media", on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(upload_to="products", blank=True, null=True)
+    alt = models.CharField(max_length=250, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Изображения'
+
+
+class ProductReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Продукт", related_name="reviews")
+    review = models.TextField()
+    data = models.DateTimeField(auto_now_add=True)

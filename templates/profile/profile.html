@@ -9,6 +9,12 @@
                 </div>
             </div>
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
         <div class="page-content pt-150 pb-150">
             <div class="container">
                 <div class="row">
@@ -206,7 +212,8 @@
                                                             {{ user_form.last_name }}
                                                         </div>
                                                         <div class="form-group col-md-12">
-                                                            <label>Мобильный телефон <span class="required">*</span></label>
+                                                            <label>Мобильный телефон <span
+                                                                    class="required">*</span></label>
                                                             {{ user_form.phone_number }}
                                                             {% if user_form.phone_number.errors %}
                                                                 <ul class="errorlist">

@@ -42,6 +42,12 @@ class UserRegisterForm(UserCreationForm):
             raise forms.ValidationError("Passwords don't match")
         return cd['password2']
 
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        if User.objects.filter(email=data).exists():
+            raise forms.ValidationError("Email already registered")
+        return data
+
 
 class UserEditForm(forms.ModelForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={
@@ -60,6 +66,13 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'phone_number', 'email',)
+
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        qs = User.objects.exclude(id=self.instance.id).filter(email=data)
+        if qs.exists():
+            raise forms.ValidationError('Email already registered')
+        return data
 
 
 class ProfileForm(forms.ModelForm):

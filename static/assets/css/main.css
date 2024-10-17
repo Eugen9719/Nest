@@ -12685,3 +12685,30 @@ footer .hotline img {
     padding: 0;
     font: inherit;
 }
+
+.category-list {
+    list-style-type: none; /* Убирает маркеры у списка */
+    padding: 0; /* Убирает отступы */
+}
+
+.category-item {
+    margin: 10px 0; /* Отступы между категориями */
+    font-weight: bold; /* Полужирный шрифт для основных категорий */
+}
+
+.sub-category-list,
+.sub-sub-category-list {
+    list-style-type: none; /* Убирает маркеры у подкатегорий */
+    padding-left: 20px; /* Отступ слева для подкатегорий */
+}
+
+.sub-category-item,
+.sub-sub-category-item {
+    margin: 5px 0; /* Отступы между подкатегориями */
+}
+
+.sub-category-name,
+.sub-sub-category-name {
+    font-weight: normal; /* Обычный шрифт для подкатегорий */
+    color: #555; /* Цвет текста подкатегорий */
+}

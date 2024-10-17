@@ -91,8 +91,8 @@
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
                                             <a href="shop-product-right.html">
-                                                <img class="default-img" src="../../static/assets/imgs/shop/product-1-1.jpg" alt=""/>
-                                                <img class="hover-img" src="../../static/assets/imgs/shop/product-1-2.jpg" alt=""/>
+                                                <img class="default-img" src="{{ product.main_image }}" alt="1"/>
+                                                <img class="hover-img" src="{{ product.main_image }}" alt="1"/>
                                             </a>
                                         </div>
                                         <div class="product-action-1">
@@ -119,7 +119,8 @@
                                             <span class="font-small ml-5 text-muted"> (4.0)</span>
                                         </div>
                                         <div>
-                                            <span class="font-small text-muted">By <a href="vendor-details-1.html">{{ product.vendor }}</a></span>
+                                            <span class="font-small text-muted">By <a
+                                                    href="vendor-details-1.html">{{ product.vendor }}</a></span>
                                         </div>
                                         <div class="product-card-bottom">
                                             <div class="product-price">
@@ -326,32 +327,33 @@
                 </div>
                 <div class="col-lg-1-5 primary-sidebar sticky-sidebar">
                     <div class="sidebar-widget widget-category-2 mb-30">
-                        <h5 class="section-title style-1 mb-30">Category</h5>
+                        <h5 class="section-title style-1 mb-30">Категории</h5>
+                        {% for c in categories %}
+                            <ul>
+                                <li>
+                                    <a href=""> <img src="../../static/assets/imgs/theme/icons/category-1.svg"
+                                                     alt=""/>{{ c.name }}</a><span
+                                        class="count">30</span>
+                                </li>
+                            </ul>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% load mptt_tags %}
                         <ul>
-                            <li>
-                                <a href="shop-grid-right.html"> <img src="../../static/assets/imgs/theme/icons/category-1.svg"
-                                                                     alt=""/>Milks & Dairies</a><span
-                                    class="count">30</span>
-                            </li>
-                            <li>
-                                <a href="shop-grid-right.html"> <img src="../../static/assets/imgs/theme/icons/category-2.svg"
-                                                                     alt=""/>Clothing</a><span class="count">35</span>
-                            </li>
-                            <li>
-                                <a href="shop-grid-right.html"> <img src="../../static/assets/imgs/theme/icons/category-3.svg"
-                                                                     alt=""/>Pet Foods </a><span class="count">42</span>
-                            </li>
-                            <li>
-                                <a href="shop-grid-right.html"> <img src="../../static/assets/imgs/theme/icons/category-4.svg"
-                                                                     alt=""/>Baking material</a><span
-                                    class="count">68</span>
-                            </li>
-                            <li>
-                                <a href="shop-grid-right.html"> <img src="../../static/assets/imgs/theme/icons/category-5.svg"
-                                                                     alt=""/>Fresh Fruit</a><span
-                                    class="count">87</span>
-                            </li>
+                            {% recursetree categories %}
+                                <li>
+                                    {{ node.name }}
+                                    {% if not node.is_leaf_node %}
+                                        <ul class="children">
+                                            <a href="{% url 'shop:products_list_by_category' node.slug %}"></a>{{ children }}
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                            {% endrecursetree %}
                         </ul>
+
+
                     </div>
                     <!-- Fillter By Price -->
                     <div class="sidebar-widget price_range range mb-30">
