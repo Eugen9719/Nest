@@ -71,6 +71,12 @@
                                             </div>
 
                                             <div class="detail-extralink mb-50">
+                                                <form method="post" action="{% url 'cart:cart_add' product.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="override_quantity" value="True">
+                                                    <input type="number" name="quantity" value="1">
+                                                    <input type="submit" value="Add to cart">
+                                                </form>
                                                 <div class="detail-qty border radius">
                                                     <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
                                                     <span class="qty-val">1</span>

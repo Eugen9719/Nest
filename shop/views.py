@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+
+from cart.forms import CartAddProductForm
 from shop.form import ProductReviewForm
 from shop.models import Product, Category, ProductReview
 
@@ -29,7 +31,9 @@ def product_detail(request, product_slug):
                                                    product=product).exists() if request.user.is_authenticated else False
 
     # Обработка формы
+    cart_product_form = CartAddProductForm()
     form = ProductReviewForm(request.POST or None)
+
     if request.method == 'POST' and form.is_valid():
         review = form.save(commit=False)
         review.product = product
@@ -43,6 +47,7 @@ def product_detail(request, product_slug):
         'reviews': reviews,
         'form': form,
         'make_review': make_review,
+        'cart_product_form':cart_product_form,
     })
 
 
