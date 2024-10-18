@@ -25,8 +25,18 @@ class Category(MPTTModel):
     def __str__(self) -> str:
         return self.name
 
+    def get_category_path(self):
+        """
+        Возвращает путь от корневой категории до текущей в виде списка.
+        """
+        return self.get_ancestors(include_self=True)
+
     def get_absolute_url(self):
-        return reverse("shop:products_list_by_category", kwargs={"slug": self.slug})
+        # Проверяем, есть ли дочерние категории
+        if self.children.exists():
+            return reverse("shop:child_categories", kwargs={"id": self.id})
+        else:
+            return reverse("shop:products_list_by_category", kwargs={"category_slug": self.slug})
 
 
 class Product(models.Model):

@@ -54,7 +54,7 @@
                                                     <div class="product-rate d-inline-block">
                                                         <div class="product-rating" style="width: 90%"></div>
                                                     </div>
-                                                    <span class="font-small ml-5 text-muted"> (32 отзыва)</span>
+                                                    <span class="font-small ml-5 text-muted"> ({{ product.reviews.count }} отзыва)</span>
                                                 </div>
                                             </div>
                                             <div class="clearfix product-price-cover">
@@ -124,7 +124,7 @@
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" id="Reviews-tab" data-bs-toggle="tab"
-                                                   href="#Reviews">Reviews (3)</a>
+                                                   href="#Reviews">Отзывы ({{ product.reviews.count }})</a>
                                             </li>
                                         </ul>
                                         <div class="tab-content shop_info_tab entry-main-content">
@@ -336,7 +336,7 @@
                                                 <div class="comments-area">
                                                     <div class="row">
                                                         <div class="col-lg-8">
-                                                            <h4 class="mb-30">Customer questions & answers</h4>
+                                                            <h4 class="mb-30">Отзывы пользователей</h4>
                                                             <div class="comment-list">
                                                                 {% for review in reviews %}
                                                                     <div class="single-comment justify-content-between d-flex mb-30">

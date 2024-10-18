@@ -6,32 +6,15 @@
             <div class="container">
                 <div class="archive-header">
                     <div class="row align-items-center">
-                        <div class="col-xl-3">
-                            <h1 class="mb-15">Snack</h1>
-                            <div class="breadcrumb">
-                                <a href="../index.html" rel="nofollow"><i class="fi-rs-home mr-5"></i>Home</a>
-                                <span></span> Shop <span></span> Snack
-                            </div>
+                        <div class="breadcrumb">
+                            <a href="{% url 'shop:index' %}" rel="nofollow"><i class="fi-rs-home mr-5"></i>Домашняя</a>
+                            {% for ancestor in category_path %}
+                                <span></span>
+                                <a href="{{ ancestor.get_absolute_url }}">{{ ancestor.name }}</a>
+                            {% endfor %}
                         </div>
-                        <div class="col-xl-9 text-end d-none d-xl-block">
-                            <ul class="tags-list">
-                                <li class="hover-up">
-                                    <a href="blog-category-grid.html"><i class="fi-rs-cross mr-10"></i>Cabbage</a>
-                                </li>
-                                <li class="hover-up active">
-                                    <a href="blog-category-grid.html"><i class="fi-rs-cross mr-10"></i>Broccoli</a>
-                                </li>
-                                <li class="hover-up">
-                                    <a href="blog-category-grid.html"><i class="fi-rs-cross mr-10"></i>Artichoke</a>
-                                </li>
-                                <li class="hover-up">
-                                    <a href="blog-category-grid.html"><i class="fi-rs-cross mr-10"></i>Celery</a>
-                                </li>
-                                <li class="hover-up mr-0">
-                                    <a href="blog-category-grid.html"><i class="fi-rs-cross mr-10"></i>Spinach</a>
-                                </li>
-                            </ul>
-                        </div>
+
+
                     </div>
                 </div>
             </div>
@@ -90,10 +73,17 @@
                                 <div class="product-cart-wrap mb-30">
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
-                                            <a href="shop-product-right.html">
-                                                <img class="default-img" src="{{ product.main_image }}" alt="1"/>
-                                                <img class="hover-img" src="{{ product.main_image }}" alt="1"/>
+                                            {% if product.image %}
+                                            <a href="#">
+                                                <img class="default-img" src="{{ product.main_image.url }}" alt="1"/>
+                                                <img class="hover-img" src="{{ product.main_image.url }}" alt="1"/>
                                             </a>
+                                            {% else %}
+                                                 <a href="#">
+                                                <img class="default-img" src="" alt="1"/>
+                                                <img class="hover-img" src="" alt="1"/>
+                                            </a>
+                                            {% endif %}
                                         </div>
                                         <div class="product-action-1">
                                             <a aria-label="Add To Wishlist" class="action-btn"
@@ -109,7 +99,7 @@
                                     </div>
                                     <div class="product-content-wrap">
                                         <div class="product-category">
-                                            <a href="shop-grid-right.html">Snack</a>
+                                            <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
                                         </div>
                                         <h2><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h2>
                                         <div class="product-rate-cover">
@@ -326,35 +316,6 @@
                     <!--End Deals-->
                 </div>
                 <div class="col-lg-1-5 primary-sidebar sticky-sidebar">
-                    <div class="sidebar-widget widget-category-2 mb-30">
-                        <h5 class="section-title style-1 mb-30">Категории</h5>
-                        {% for c in categories %}
-                            <ul>
-                                <li>
-                                    <a href=""> <img src="../../static/assets/imgs/theme/icons/category-1.svg"
-                                                     alt=""/>{{ c.name }}</a><span
-                                        class="count">30</span>
-                                </li>
-                            </ul>
-                        {% endfor %}
-                    </div>
-                    <div>
-                        {% load mptt_tags %}
-                        <ul>
-                            {% recursetree categories %}
-                                <li>
-                                    {{ node.name }}
-                                    {% if not node.is_leaf_node %}
-                                        <ul class="children">
-                                            <a href="{% url 'shop:products_list_by_category' node.slug %}"></a>{{ children }}
-                                        </ul>
-                                    {% endif %}
-                                </li>
-                            {% endrecursetree %}
-                        </ul>
-
-
-                    </div>
                     <!-- Fillter By Price -->
                     <div class="sidebar-widget price_range range mb-30">
                         <h5 class="section-title style-1 mb-30">Fill by price</h5>
