@@ -13,10 +13,10 @@
         <div class="container mb-80 mt-50">
             <div class="row">
                 <div class="col-lg-8 mb-40">
-                    <h1 class="heading-2 mb-10">Your Cart</h1>
+                    <h1 class="heading-2 mb-10">Ваша корзина</h1>
                     <div class="d-flex justify-content-between">
-                        <h6 class="text-body">There are <span class="text-brand">3</span> products in your cart</h6>
-                        <h6 class="text-body"><a href="#" class="text-muted"><i class="fi-rs-trash mr-5"></i>Clear Cart</a>
+                        <h6 class="text-body">Здесь<span class="text-brand"> {{ cart|length }}</span> товара в вашей
+                            корзине</h6>
                         </h6>
                     </div>
                 </div>
@@ -32,11 +32,11 @@
                                            id="exampleCheckbox11" value="">
                                     <label class="form-check-label" for="exampleCheckbox11"></label>
                                 </th>
-                                <th scope="col" colspan="2">Product</th>
-                                <th scope="col">Unit Price</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Subtotal</th>
-                                <th scope="col" class="end">Remove</th>
+                                <th scope="col" colspan="2">Товар</th>
+                                <th scope="col">Цена за ед.</th>
+                                <th scope="col">Кол-во</th>
+                                <th scope="col">Сумма</th>
+                                <th scope="col" class="end">Удалить</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -50,7 +50,16 @@
                                         </td>
                                         <td class="image product-thumbnail pt-40">
                                             <img src="
-                                                    {% if product.image %}{{ product.image.url }}{% else %} {% endif %}"
+                                                    
+                                                    
+                                                    
+                                               
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    {% if product.main_image %}{{ product.main_image.url }}{% else %} {% endif %}"
                                                  alt="#">
                                         </td>
                                         <td class="product-des product-name">
@@ -64,18 +73,93 @@
                                         </td>
                                         <td class="text-center detail-info" data-title="Stock">
                                             <div class="detail-extralink mr-15">
-                                                <form method="post" action="{% url 'cart:cart_add' product.id %}">
-                                                    
+                                                <form method="post" action="{% url 'cart:cart_add' product.id %}"
+                                                      class="update-quantity-form">
                                                     {% csrf_token %}
-                                                    {{ item.update_quantity_form.quantity }}
-                                                    {{ item.update_quantity_form.override_quantity }}
-                                                        
-                                                    <input type="submit" value="Обновить">
+
+                                                    <div class="quantity-wrapper">
+                                                        {{ item.update_quantity_form.quantity }}
+                                                        {{ item.update_quantity_form.override_quantity }}
+                                                    </div>
+
+                                                    <div class="button-wrapper">
+                                                        <button type="submit" class="button-update">
+                                                            <svg fill="#ffffff" width="20px" height="20px"
+                                                                 viewBox="0 0 24 24" id="update" data-name="Flat Line"
+                                                                 xmlns="http://www.w3.org/2000/svg"
+                                                                 class="icon flat-line">
+                                                                <path id="primary" d="M4,12A8,8,0,0,1,18.93,8"
+                                                                      style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
+                                                                <path id="primary-2" data-name="primary"
+                                                                      d="M20,12A8,8,0,0,1,5.07,16"
+                                                                      style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></path>
+                                                                <polyline id="primary-3" data-name="primary"
+                                                                          points="14 8 19 8 19 3"
+                                                                          style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></polyline>
+                                                                <polyline id="primary-4" data-name="primary"
+                                                                          points="10 16 5 16 5 21"
+                                                                          style="fill: none; stroke: rgb(255, 255, 255); stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></polyline>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+
+                                                    <style>
+                                                        /* Стили для формы обновления количества */
+                                                        .update-quantity-form {
+                                                            display: flex;
+                                                            flex-direction: column; /* Изменяем направление на вертикальное */
+                                                            margin-bottom: 20px;
+                                                        }
+
+                                                        /* Стили для поля количества */
+                                                        .quantity-wrapper {
+                                                            display: flex;
+                                                            align-items: center;
+                                                            gap: 5px;
+                                                            margin-bottom: 10px; /* Отступ между полем и кнопкой */
+                                                        }
+
+                                                        .quantity-input {
+                                                            width: 40px; /* Уменьшаем ширину */
+                                                            height: 25px; /* Уменьшаем высоту */
+                                                            padding: 0; /* Убираем внутренние отступы */
+                                                            font-size: 12px; /* Уменьшаем размер текста */
+                                                            border: 2px solid #28a745; /* Зеленая обводка */
+                                                            border-radius: 4px;
+                                                            text-align: center;
+                                                        }
+
+                                                        /* Стили для кнопки обновления */
+                                                        .button-wrapper {
+                                                            display: flex;
+                                                            justify-content: center; /* Центрируем кнопку */
+                                                        }
+
+                                                        .button-update {
+                                                            padding: 5px 10px; /* Уменьшаем отступы для кнопки */
+                                                            background-color: #28a745; /* Зеленый фон */
+                                                            color: white; /* Цвет текста */
+                                                            border: none; /* Без обводки */
+                                                            border-radius: 4px; /* Скругление углов */
+                                                            cursor: pointer; /* Указатель на курсор при наведении */
+                                                            font-size: 14px; /* Уменьшаем размер текста */
+                                                            display: flex; /* Используем flex для выравнивания */
+                                                            align-items: center; /* Выравниваем по центру */
+                                                            justify-content: center; /* Выравниваем по центру */
+                                                        }
+
+                                                        .button-update:hover {
+                                                            background-color: #218838; /* Цвет при наведении (темнее) */
+                                                        }
+
+                                                        .button-update svg {
+                                                            width: 20px; /* Ширина и высота иконки */
+                                                            height: 20px;
+                                                        }
+                                                    </style>
                                                 </form>
-                                                
-                                                    
-                                                
-                                               
+
+
                                             </div>
                                         </td>
                                         <td class="price" data-title="Price">
@@ -101,7 +185,7 @@
                     <div class="cart-action d-flex justify-content-between">
                         <a href="{% url "shop:index" %}" class="btn "><i class="fi-rs-arrow-left mr-10"></i>Продолжить
                             покупки</a>
-                        <a class="btn  mr-10 mb-sm-15"><i class="fi-rs-refresh mr-10"></i>Update Cart</a>
+                        {#                        <a class="btn  mr-10 mb-sm-15"><i class="fi-rs-refresh mr-10"></i>Update Cart</a>#}
                     </div>
                     <div class="row mt-50">
                         <div class="col-lg-7">
@@ -177,7 +261,8 @@
                                 </tbody>
                             </table>
                         </div>
-                        <a href="#" class="btn mb-20 w-100">Proceed To CheckOut<i class="fi-rs-sign-out ml-15"></i></a>
+                        <a href="{% url 'orders:order_create' %}" class="btn mb-20 w-100">Proceed To CheckOut<i
+                                class="fi-rs-sign-out ml-15"></i></a>
                     </div>
                 </div>
             </div>

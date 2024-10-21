@@ -1,6 +1,15 @@
 from django.contrib import admin
 
-from shop.models import Product, Category, ProductMedia, ProductReview
+from shop.models import Product, Category, ProductMedia, ProductReview, Characteristic, CharacteristicValue
+
+
+class ProductMediaInline(admin.TabularInline):
+    model = ProductMedia
+    extra = 1
+
+class CharacteristicValueInline(admin.TabularInline):
+    model = CharacteristicValue
+    extra = 1
 
 
 @admin.register(Product)
@@ -13,6 +22,7 @@ class ProductAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     ordering = ['vendor', 'created_at']
     show_facets = admin.ShowFacets.ALWAYS
+    inlines = [ProductMediaInline, CharacteristicValueInline]
 
 
 @admin.register(Category)
@@ -25,9 +35,7 @@ class CategoryAdmin(admin.ModelAdmin):
     show_facets = admin.ShowFacets.ALWAYS
 
 
-@admin.register(ProductMedia)
-class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ['product', 'image', 'alt']
-
 
 admin.site.register(ProductReview)
+admin.site.register(Characteristic)
+admin.site.register(CharacteristicValue)

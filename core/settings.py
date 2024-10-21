@@ -15,7 +15,8 @@ SECRET_KEY = 'django-insecure-i9z4(@b(kc_u8)az%r)&@__ujd&c!hb=y%)tfdznqx3h_f6!p@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['nest.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'host.docker.internal']
+
 
 # Application definition
 
@@ -32,9 +33,12 @@ INSTALLED_APPS = [
     'social_django',
     'django_extensions',
     'mptt',
+    'imagekit',
 
     'shop.apps.ShopConfig',
-    'cart.apps.CartConfig'
+    'cart.apps.CartConfig',
+    'orders.apps.OrdersConfig',
+
 
 ]
 
@@ -63,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'shop.context_processors.p_categories',
+                'cart.context_processors.cart'
 
             ],
         },
@@ -109,15 +114,29 @@ AUTH_USER_MODEL = 'user.User'
 
 ######################################################## Database ######################################################
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': '5432',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST')
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'nest',  # Это соответствует POSTGRES_DB
+        'USER': 'admin',  # Это соответствует POSTGRES_USER
+        'PASSWORD': 'admin',  # Это соответствует POSTGRES_PASSWORD
+        'HOST': 'postgres',  # Имя службы в docker-compose
+        'PORT': '5432',
     }
 }
+
+
+
 ############################################ Authorization and Authentication ##########################################
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
@@ -161,3 +180,8 @@ STATICFILES_DIRS = [
 
 ###################################################### Cart ############################################################
 CART_SESSION_ID = 'cart'
+
+################################################### Stripe #############################################################
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET= config('STRIPE_WEBHOOK_SECRET')

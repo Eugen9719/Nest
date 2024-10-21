@@ -55,5 +55,7 @@ class Cart:
         return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
 
     def clear(self):
-        del self.cart[settings.CART_SESSION_ID]
-        self.save()
+        """Clear the cart"""
+        self.cart.clear()  # Очистка корзины в памяти
+        self.save()  # Обновление сессии
+

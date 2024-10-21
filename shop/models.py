@@ -1,10 +1,28 @@
-from django.contrib.postgres.indexes import GinIndex, BTreeIndex
-from django.db import models
+from django.contrib.postgres.indexes import  BTreeIndex
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
 from user.models import User
+from PIL import Image
+from django.db import models
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+
+def save_image(obj, height, weight):
+    if obj:
+        img = Image.open(obj)
+        if img.mode == 'RGBA':
+            img = img.convert('RGB')
+        img = img.resize((height, weight), Image.Resampling.LANCZOS)
+        # Сохраняем изменённое изображение в памяти
+        buffer = BytesIO()
+        img.save(buffer, format='JPEG')
+        # Заменяем оригинальный файл новым
+        obj.save(obj.name, ContentFile(buffer.getvalue()), save=False)
+    return obj
 
 
 class Category(MPTTModel):
@@ -15,6 +33,10 @@ class Category(MPTTModel):
         "self", null=True, blank=True, related_name="children", on_delete=models.CASCADE
     )
     image = models.ImageField(blank=True, null=True, upload_to="category/")
+    svg_image = models.TextField(blank=True, null=True)
+
+    def svg_display(self):
+        return mark_safe(self.svg_image)
 
     class Meta:
         verbose_name_plural = 'Категории'
@@ -37,6 +59,12 @@ class Category(MPTTModel):
             return reverse("shop:child_categories", kwargs={"id": self.id})
         else:
             return reverse("shop:products_list_by_category", kwargs={"category_slug": self.slug})
+
+    def save(self, *args, **kwargs):
+        save_image(self.image, 260, 200)
+        super().save(*args, **kwargs)
+
+
 
 
 class Product(models.Model):
@@ -81,9 +109,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('shop:product_detail', args=[self.slug])
 
-    def get_first_image(self):
-        all_media = self.media.all()
-        return all_media[0] if all_media else None
+    def save(self, *args, **kwargs):
+        save_image(self.main_image, 200, 200)
+        super().save(*args, **kwargs)
 
 
 class ProductMedia(models.Model):
@@ -93,6 +121,33 @@ class ProductMedia(models.Model):
 
     class Meta:
         verbose_name_plural = 'Изображения'
+
+    def save(self, *args, **kwargs):
+        save_image(self.image, 600, 600)
+        super().save(*args, **kwargs)
+
+
+class Characteristic(models.Model):
+    name = models.CharField("Название", max_length=100)
+    description = models.TextField("Описание", blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Тип продукта",
+                                 related_name='characteristics')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Характеристики"
+
+
+class CharacteristicValue(models.Model):
+    value = models.CharField(" Значение атрибута", max_length=100)
+    characteristic = models.ForeignKey(Characteristic, on_delete=models.CASCADE, verbose_name="Характеристика",
+                                       related_name='cvalue')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name="Продукт", related_name='cvalue')
+
+    def __str__(self):
+        return f"{self.characteristic}:{self.value}"
 
 
 class ProductReview(models.Model):

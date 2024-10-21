@@ -73,17 +73,12 @@
                                 <div class="product-cart-wrap mb-30">
                                     <div class="product-img-action-wrap">
                                         <div class="product-img product-img-zoom">
-                                            {% if product.image %}
+
                                             <a href="#">
                                                 <img class="default-img" src="{{ product.main_image.url }}" alt="1"/>
-                                                <img class="hover-img" src="{{ product.main_image.url }}" alt="1"/>
+
                                             </a>
-                                            {% else %}
-                                                 <a href="#">
-                                                <img class="default-img" src="" alt="1"/>
-                                                <img class="hover-img" src="" alt="1"/>
-                                            </a>
-                                            {% endif %}
+
                                         </div>
                                         <div class="product-action-1">
                                             <a aria-label="Add To Wishlist" class="action-btn"
@@ -315,60 +310,65 @@
                     </section>
                     <!--End Deals-->
                 </div>
-                <div class="col-lg-1-5 primary-sidebar sticky-sidebar">
+                <div class="col-lg-1-5 primary-sidebar sticky-sidebar">\
+                <div class="sidebar-widget widget-category-2 mb-30">
+                    <form method="get" action="{% url 'shop:products_list_by_category' category.slug %}">
+                        {% for attribute, values in unique_char.items %}
+                            
+                                <label class="fw-900">{{ attribute.name }}</label>
+                                <div class="custom-checkbox">
+                                    {% for value in values %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="attribute_values"
+                                                   id="attribute_{{ attribute.id }}_{{ forloop.counter }}"
+                                                   value="{{ value.value }}"
+                                                   {% if value.value in selected_values %}checked{% endif %}/>
+
+                                            <label class="form-check-label"
+                                                   for="attribute_{{ attribute.id }}_{{ forloop.counter }}"><span>{{ value.value }} ({{ value.count }})</span></label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            
+                        {% endfor %}
+                        <button class="primary__btn price__filter--btn" type="submit">Применить</button>
+                    </form>
+                </div>
+
+
                     <!-- Fillter By Price -->
+
                     <div class="sidebar-widget price_range range mb-30">
-                        <h5 class="section-title style-1 mb-30">Fill by price</h5>
                         <div class="price-filter">
-                            <div class="price-filter-inner">
-                                <div id="slider-range" class="mb-20"></div>
-                                <div class="d-flex justify-content-between">
-                                    <div class="caption">From: <strong id="slider-range-value1"
-                                                                       class="text-brand"></strong></div>
-                                    <div class="caption">To: <strong id="slider-range-value2"
-                                                                     class="text-brand"></strong></div>
+                            <h2 class="widget__title h3">Фильтер цены</h2>
+
+
+                            <form class="price__filter--form"
+                                  action="{% url 'shop:products_list_by_category' category.slug %}">
+                                <div class="price-filter mb-3 d-flex align-items-center justify-content-between">
+                                    <div class="min-price">
+                                        <label class="price-label" for="min_price">От:</label>
+                                        <div class="d-flex align-items-center">
+                                            <span class="currency-symbol">$</span>
+                                            <input class="price-input border-1" type="number" id="min_price"
+                                                   name="min_price" placeholder="0" min="0" step="1" max="100000">
+                                        </div>
+                                    </div>
+
+                                    <div class="max-price">
+                                        <label class="price-label" for="max_price">До:</label>
+                                        <div class="d-flex align-items-center">
+                                            <span class="currency-symbol">$</span>
+                                            <input class="price-input border-1" type="number" id="max_price"
+                                                   name="max_price" step="1" min="0" placeholder="10000" max="10000">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+
+                                <button class="primary__btn price__filter--btn" type="submit">Фильтровать</button>
+                            </form>
                         </div>
-                        <div class="list-group">
-                            <div class="list-group-item mb-10 mt-10">
-                                <label class="fw-900">Color</label>
-                                <div class="custome-checkbox">
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox1" value=""/>
-                                    <label class="form-check-label" for="exampleCheckbox1"><span>Red (56)</span></label>
-                                    <br/>
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox2" value=""/>
-                                    <label class="form-check-label"
-                                           for="exampleCheckbox2"><span>Green (78)</span></label>
-                                    <br/>
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox3" value=""/>
-                                    <label class="form-check-label"
-                                           for="exampleCheckbox3"><span>Blue (54)</span></label>
-                                </div>
-                                <label class="fw-900 mt-15">Item Condition</label>
-                                <div class="custome-checkbox">
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox11" value=""/>
-                                    <label class="form-check-label"
-                                           for="exampleCheckbox11"><span>New (1506)</span></label>
-                                    <br/>
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox21" value=""/>
-                                    <label class="form-check-label"
-                                           for="exampleCheckbox21"><span>Refurbished (27)</span></label>
-                                    <br/>
-                                    <input class="form-check-input" type="checkbox" name="checkbox"
-                                           id="exampleCheckbox31" value=""/>
-                                    <label class="form-check-label"
-                                           for="exampleCheckbox31"><span>Used (45)</span></label>
-                                </div>
-                            </div>
-                        </div>
-                        <a href="shop-grid-right.html" class="btn btn-sm btn-default"><i class="fi-rs-filter mr-5"></i>
-                            Fillter</a>
                     </div>
                     <!-- Product sidebar Widget -->
                     <div class="sidebar-widget product-sidebar mb-30 p-30 bg-grey border-radius-10">

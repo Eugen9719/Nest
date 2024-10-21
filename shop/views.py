@@ -1,8 +1,9 @@
+from django.db.models import Count
 from django.shortcuts import render, get_object_or_404, redirect
 
 from cart.forms import CartAddProductForm
 from shop.form import ProductReviewForm
-from shop.models import Product, Category, ProductReview
+from shop.models import Product, Category, ProductReview, Characteristic, CharacteristicValue
 
 
 def home(request):
@@ -13,9 +14,42 @@ def products_list_by_category(request, category_slug):
     category = get_object_or_404(Category, slug=category_slug)
     products = Product.objects.filter(category=category)
 
+    # Получаем уникальные атрибуты и их значения для продуктов в данной категории
+    characteristics = Characteristic.objects.filter(category=category)
+    unique_char = {}
+
+    for char in characteristics:
+        char_values = CharacteristicValue.objects.filter(characteristic=char, product__in=products) \
+            .values('value') \
+            .annotate(count=Count('value')) \
+            .order_by('value')
+        unique_char[char] = char_values
+
+    # Получаем выбранные значения атрибутов из GET запроса
+    selected_values = request.GET.getlist('attribute_values')
+
+    # Формируем QuerySet для фильтрации продуктов по выбранным значениям атрибутов
+    filtered_products = products
+    for value in selected_values:
+        filtered_products = filtered_products.filter(cvalue__value=value)
+
+    # Получаем параметры фильтрации по цене из GET запроса
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+
+
+    # Применяем фильтры по цене, если они заданы
+
+    if min_price:
+        filtered_products = filtered_products.filter(price__gte=min_price)
+    if max_price:
+        filtered_products = filtered_products.filter(price__lte=max_price)
+
     context = {
         'category': category,
-        'products': products,
+        'products': filtered_products,  # Передаем отфильтрованные продукты
+        'unique_char': unique_char,  # Передаем уникальные атрибуты в шаблон
         'category_path': category.get_category_path(),
     }
     return render(request, 'products/products-list.html', context)
