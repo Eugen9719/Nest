@@ -128,9 +128,9 @@
                                     <a href="shop-wishlist.html">
                                         <img class="svgInject" alt="Nest"
                                              src="{% static 'assets/imgs/theme/icons/icon-heart.svg' %}"/>
-                                        <span class="pro-count blue">6</span>
+                                        <span class="pro-count blue">{{ wishlist_count }}</span>
                                     </a>
-                                    <a href="shop-wishlist.html"><span class="lable">Wishlist</span></a>
+                                    <a href="{% url 'shop:wishlist' %}"><span class="lable">Лист ожидания</span></a>
                                 </div>
 
                                 <div class="header-action-icon-2">

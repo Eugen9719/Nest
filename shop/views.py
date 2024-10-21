@@ -1,9 +1,11 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.shortcuts import render, get_object_or_404, redirect
 
 from cart.forms import CartAddProductForm
 from shop.form import ProductReviewForm
-from shop.models import Product, Category, ProductReview, Characteristic, CharacteristicValue
+from shop.models import Product, Category, ProductReview, Characteristic, CharacteristicValue, Wishlist
 
 
 def home(request):
@@ -36,11 +38,7 @@ def products_list_by_category(request, category_slug):
     # Получаем параметры фильтрации по цене из GET запроса
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
-
-
-
     # Применяем фильтры по цене, если они заданы
-
     if min_price:
         filtered_products = filtered_products.filter(price__gte=min_price)
     if max_price:
@@ -81,7 +79,7 @@ def product_detail(request, product_slug):
         'reviews': reviews,
         'form': form,
         'make_review': make_review,
-        'cart_product_form':cart_product_form,
+        'cart_product_form': cart_product_form,
     })
 
 
@@ -98,5 +96,36 @@ def child_categories(request, id):
         'child_categories': child_categories,
         'category_path': category.get_category_path(),  # передаем путь категории
     }
-    print(category.get_category_path())
     return render(request, 'products/cat.html', context)
+
+
+@login_required
+def wishlist(request):
+    wishlist = Wishlist.objects.filter(user=request.user)
+    wishlist_count = Wishlist.objects.filter(user=request.user).count()
+    context = {
+        "wishlist": wishlist,
+        "wishlist_count":wishlist_count
+    }
+    return render(request, 'wishlist.html', context)
+
+
+def add_to_wishlist(request, product_id):
+    try:
+        # Проверяем, существует ли уже запись о продукте в списке желаний пользователя
+        Wishlist.objects.get(user=request.user, product_id=product_id)
+        messages.error(request, 'Продукт уже находится в вашем списке желаемого.')
+    except Wishlist.DoesNotExist:
+        # Если запись не существует, создаем новую
+        wishlist_item = Wishlist(user=request.user, product_id=product_id)
+        wishlist_item.save()
+        messages.success(request, 'Продукт успешно добавлен в список желаемого.')
+
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def remove_wishlist(request, product_id):
+    wishlist_item = Wishlist.objects.get(user=request.user, product_id=product_id)
+    wishlist_item.delete()  # Удаляем объект из базы данных
+
+    return redirect(request.META.get('HTTP_REFERER'))

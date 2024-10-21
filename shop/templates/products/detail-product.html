@@ -139,7 +139,21 @@
 
 
                                                 </style>
+                                                <div class="product-extra-link2">
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up"
+                                                       href="{% url 'shop:add_to_wishlist' product.id %}"><i
+                                                            class="fi-rs-heart"></i></a>
+                                                </div>
+                                                {% if messages %}
+                                                    <ul class="messages">
+                                                        {% for message in messages %}
+                                                            <li{% if message.tags %}
+                                                                class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
                                             </div>
+
                                             <div class="font-xs">
                                                 <ul class="mr-50 float-start">
                                                     <li class="mb-5">Type: <span class="text-brand">Organic</span></li>

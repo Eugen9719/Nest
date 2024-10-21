@@ -1,0 +1,84 @@
+version: '3.8'
+
+networks:
+  nest_network:
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: nest_db
+    environment:
+      POSTGRES_DB: nest
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - nest_network
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - nest_network
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: django
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py create_superuser  &&
+             python manage.py runserver 0.0.0.0:8080"
+    volumes:
+      - .:/Nest
+    ports:
+      - "8080:8080"  # Подключение к порту 8000
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      DJANGO_SETTINGS_MODULE: core.settings
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}  # Передаем ключ Stripe через env файл
+    networks:
+      - nest_network
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    # Stripe CLI работает вне контейнера, поэтому ему нужен способ связаться с контейнером. host.docker.internal позволяет это сделать.
+    command: listen --forward-to http://host.docker.internal:8080/orders/webhook/
+    environment:
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY}  # Передаем через переменную окружения
+    depends_on:
+      - web
+    networks:
+      - nest_network
+
+  celery:
+    build: .
+    container_name: celery
+    command: bash -c "celery -A core worker --loglevel=info"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+    networks:
+      - nest_network
+
+
+
+volumes:
+  postgres_data: { }

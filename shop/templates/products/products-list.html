@@ -82,11 +82,11 @@
                                         </div>
                                         <div class="product-action-1">
                                             <a aria-label="Add To Wishlist" class="action-btn"
-                                               href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                               href="{% url 'shop:add_to_wishlist' product.id %}"><i
+                                                    class="fi-rs-heart"></i></a>
                                             <a aria-label="Compare" class="action-btn" href="shop-compare.html"><i
                                                     class="fi-rs-shuffle"></i></a>
-                                            <a aria-label="Quick view" class="action-btn" data-bs-toggle="modal"
-                                               data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
+
                                         </div>
                                         <div class="product-badges product-badges-position product-badges-mrg">
                                             <span class="hot">Hot</span>
@@ -113,8 +113,17 @@
                                                 <span class="old-price">$32.8</span>
                                             </div>
                                             <div class="add-cart">
-                                                <a class="add" href="shop-cart.html"><i
-                                                        class="fi-rs-shopping-cart mr-5"></i>Add </a>
+                                                <form method="post" action="{% url 'cart:cart_add' product.id %}">
+                                                    {% csrf_token %}
+
+                                                    <input type="hidden" id="quantity" name="quantity" value="1"
+                                                           class="quantity-input">
+
+
+                                                    <button class="add border-0"><i class="fi-rs-shopping-cart mr-5"></i>Add
+                                                    </button>
+                                                </form>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -311,10 +320,10 @@
                     <!--End Deals-->
                 </div>
                 <div class="col-lg-1-5 primary-sidebar sticky-sidebar">\
-                <div class="sidebar-widget widget-category-2 mb-30">
-                    <form method="get" action="{% url 'shop:products_list_by_category' category.slug %}">
-                        {% for attribute, values in unique_char.items %}
-                            
+                    <div class="sidebar-widget widget-category-2 mb-30">
+                        <form method="get" action="{% url 'shop:products_list_by_category' category.slug %}">
+                            {% for attribute, values in unique_char.items %}
+
                                 <label class="fw-900">{{ attribute.name }}</label>
                                 <div class="custom-checkbox">
                                     {% for value in values %}
@@ -330,11 +339,11 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                            
-                        {% endfor %}
-                        <button class="primary__btn price__filter--btn" type="submit">Применить</button>
-                    </form>
-                </div>
+
+                            {% endfor %}
+                            <button class="primary__btn price__filter--btn" type="submit">Применить</button>
+                        </form>
+                    </div>
 
 
                     <!-- Fillter By Price -->

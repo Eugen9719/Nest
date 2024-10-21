@@ -67,7 +67,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'shop.context_processors.p_categories',
-                'cart.context_processors.cart'
+                'shop.context_processors.wishlist_count',
+                'cart.context_processors.cart',
+
 
             ],
         },
@@ -114,23 +116,13 @@ AUTH_USER_MODEL = 'user.User'
 
 ######################################################## Database ######################################################
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST'),
-#         'PORT': '5432',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'nest',  # Это соответствует POSTGRES_DB
-        'USER': 'admin',  # Это соответствует POSTGRES_USER
-        'PASSWORD': 'admin',  # Это соответствует POSTGRES_PASSWORD
-        'HOST': 'postgres',  # Имя службы в docker-compose
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
         'PORT': '5432',
     }
 }
